@@ -2,9 +2,12 @@ import {
   Button,
   CircularProgress,
   Grid,
+  Snackbar,
   TextField,
   Toolbar,
   Typography,
+  Alert,
+  AlertProps,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { ethers, utils } from "ethers";
@@ -28,6 +31,18 @@ const ContractInteraction: React.FC<{
   const [value, setValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [buttonType, setButtonType] = useState("deposit");
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = (event: any, reason: any) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
   useEffect(() => {
     getGameBalance();
   }, [signer]);
@@ -85,7 +100,8 @@ const ContractInteraction: React.FC<{
   const EventController = (contract: ethers.Contract) => {
     contract.on("Deposit", (from, amount) => {
       try {
-        console.log(`${from} deposited ${utils.formatEther(amount)} ether`);
+        setMessage(`${from} deposited ${utils.formatEther(amount)} ether`);
+        handleOpen();
         getGameBalance();
         getBalance();
       } catch (error) {
@@ -97,7 +113,8 @@ const ContractInteraction: React.FC<{
 
     contract.on("Withdraw", (to, amount) => {
       try {
-        console.log(`${to} withdrew ${utils.formatEther(amount)} ether`);
+        setMessage(`${to} withdrew ${utils.formatEther(amount)} ether`);
+        handleOpen();
         getGameBalance();
         getBalance();
       } catch (error) {
@@ -109,7 +126,8 @@ const ContractInteraction: React.FC<{
 
     contract.on("GameStarted", (requestId, player) => {
       try {
-        console.log(`Game with id ${requestId} started by ${player}`);
+        setMessage(`Game with id ${requestId} started by ${player}`);
+        handleOpen();
       } catch (error) {
         console.log(error);
       }
@@ -118,7 +136,8 @@ const ContractInteraction: React.FC<{
     contract.on("RequestFulfilled", (requestId, word) => {
       try {
         const wordLast: string = word.toString();
-        console.log("Value is: ", wordLast.charAt(wordLast.length - 1));
+        setMessage(`Value is: ${wordLast.charAt(wordLast.length - 1)}`);
+        handleOpen();
         const signer = new ethers.Wallet(import.meta.env.VITE_PK, provider);
         const contract = new ethers.Contract(contractAddress, abi, signer);
         contract.fulfillGame(requestId);
@@ -129,7 +148,9 @@ const ContractInteraction: React.FC<{
 
     contract.on("GameFulfilled", (player, isWin) => {
       try {
+        setMessage(`Player ${player} ${isWin ? "won" : "lost"}`);
         console.log(`Player ${player} ${isWin ? "won" : "lost"}`);
+        handleOpen();
         getGameBalance();
       } catch (error) {
         console.log(error);
@@ -244,6 +265,13 @@ const ContractInteraction: React.FC<{
           </Grid>
         </Grid>
       </Box>
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message={message}
+      ></Snackbar>
     </>
   );
 };
