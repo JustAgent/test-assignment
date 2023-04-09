@@ -1,6 +1,7 @@
 import {
   Button,
   CircularProgress,
+  Grid,
   TextField,
   Toolbar,
   Typography,
@@ -17,8 +18,7 @@ const ContractInteraction: React.FC<{
   balance?: string;
   getBalance: () => Promise<void>;
 }> = ({ signer, account, balance, getBalance }) => {
-  console.log("CI");
-  const contractAddress = "0x75a90a5A2EEa1C6FE432e6753bc06B46De519F4b";
+  const contractAddress = "0xEcB437D03c89086c5274b73a2a990456b35Ff8D5";
   const abi = ABI.abi;
   const contract = new ethers.Contract(contractAddress, abi, signer);
   const provider = new ethers.providers.JsonRpcProvider(
@@ -42,7 +42,6 @@ const ContractInteraction: React.FC<{
 
   const getGameBalance = async () => {
     const res = await contract.balanceOf(account);
-    // console.log(utils.formatEther(res));
     setGameBalance(utils.formatEther(res));
   };
 
@@ -71,17 +70,6 @@ const ContractInteraction: React.FC<{
       console.log(error);
     }
   };
-  //   const testController = async () => {
-  //     try {
-  //       const tx = await contract.fulfillGame(
-  //         "8704942807762824032702318667176181289014670804041371408796039437739611362351"
-  //       );
-  //       await tx.wait();
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
   const withdrawController = async () => {
     try {
       const tx = await contract.withdraw(ethers.utils.parseEther(value));
@@ -151,69 +139,110 @@ const ContractInteraction: React.FC<{
     });
   };
   const handleSwitch = (option: string) => {
-    console.log(option);
     setButtonType(option);
   };
   return (
     <>
       <Box>
-        <Typography>Your game balance: {gameBalance}</Typography>
-
-        <form>
-          <TextField
-            label={`Value to ${
-              buttonType === "deposit" ? "deposit" : "withdraw"
-            }`}
-            variant="outlined"
-            value={value}
-            onChange={handleValueChange}
-          />
-        </form>
-        <Box>
-          <SwitchButton onSelect={handleSwitch} />
-        </Box>
-        <Box>
-          <Button
-            variant="contained"
-            disabled={isLoading}
-            onClick={
-              buttonType === "deposit" ? depositController : withdrawController
-            }
-          >
-            Confirm
-          </Button>
-        </Box>
-        <Toolbar>
-          {isLoading ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+        <Grid
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          container
+          spacing={2}
+        >
+          <Grid item xs={12}>
+            <Typography
+              variant="h4"
+              sx={{
+                fontFamily: "Merriweather, serif",
+                color: "#f7f7f7",
+                fontWeight: "bold",
               }}
             >
-              <CircularProgress />
-            </div>
-          ) : (
-            <></>
-          )}
-
-          <Button
-            variant="contained"
-            disabled={isLoading}
-            onClick={playController}
-          >
-            Play
-          </Button>
-
-          {/* <Button
-            variant="contained"
-            disabled={isLoading}
-            onClick={testController}
-          >
-            TEST
-          </Button> */}
-        </Toolbar>
+              Your game balance: {gameBalance}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label={`Value to ${
+                buttonType === "deposit" ? "deposit" : "withdraw"
+              }`}
+              variant="outlined"
+              value={value}
+              onChange={handleValueChange}
+              sx={{
+                "& .MuiOutlinedInput-input": {
+                  color: "#f7f7f7",
+                  fontFamily: "Merriweather, serif",
+                },
+                "& .MuiOutlinedInput-root .MuiAutocomplete-input": {
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                  },
+                },
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <Box>
+              <SwitchButton onSelect={handleSwitch} />
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <Box>
+              {isLoading ? (
+                <CircularProgress />
+              ) : (
+                <Button
+                  size="large"
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#0671BE",
+                    height: "50px",
+                    borderRadius: "10px",
+                    "&:hover": {
+                      backgroundColor: "#2B88CB",
+                    },
+                  }}
+                  disabled={isLoading}
+                  onClick={
+                    buttonType === "deposit"
+                      ? depositController
+                      : withdrawController
+                  }
+                >
+                  Confirm
+                </Button>
+              )}
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Toolbar>
+              {isLoading ? (
+                <></>
+              ) : (
+                <Button
+                  size="large"
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#0671BE",
+                    height: "50px",
+                    borderRadius: "10px",
+                    "&:hover": {
+                      backgroundColor: "#2B88CB",
+                    },
+                  }}
+                  disabled={isLoading}
+                  onClick={playController}
+                >
+                  Play
+                </Button>
+              )}
+            </Toolbar>
+          </Grid>
+        </Grid>
       </Box>
     </>
   );

@@ -3,7 +3,9 @@ import Button from "@mui/material/Button";
 import {
   AppBar,
   Box,
+  createMuiTheme,
   CssBaseline,
+  Grid,
   ThemeProvider,
   Toolbar,
   Typography,
@@ -103,21 +105,17 @@ function App() {
       getBalance();
     } catch (error) {}
   };
-  // const theme = createTheme({
-  //   typography: {
-  //     fontFamily: ["Rubik", "sans-serif"].join(","),
-  //   },
-  // });
+
   return (
     <>
-      {/* <ThemeProvider theme={theme}> */}
       <CssBaseline />
 
       {account == "" ? (
-        <Container
+        <Box
           sx={{
-            background: `linear-gradient(to bottom right, #000000, #e0f0ed)`,
+            background: `linear-gradient(22deg, rgba(140,253,255,1) 14%, rgba(127,165,255,0.6825323879551821) 48%, rgba(109,211,255,1) 100%)`,
             height: "100vh",
+            width: "100%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
@@ -125,51 +123,109 @@ function App() {
           }}
         >
           <Box>
-            <Typography variant="h2">Bet game</Typography>
+            <Typography
+              variant="h2"
+              sx={{ fontFamily: "Merriweather, serif", color: "#f7f7f7" }}
+            >
+              Welcome to our bet game
+            </Typography>
           </Box>
           <Box mt={3} mb={3}>
-            <Typography variant="h5">Please connect your wallet</Typography>
+            <Typography
+              variant="h5"
+              sx={{ fontFamily: "Merriweather, serif", color: "#f7f7f7" }}
+            >
+              Please connect your wallet
+            </Typography>
           </Box>
           <Box>
             <Button
+              size="large"
               variant="contained"
-              color="primary"
+              sx={{
+                backgroundColor: "#0671BE",
+                height: "50px",
+                borderRadius: "50px",
+                "&:hover": {
+                  backgroundColor: "#2B88CB",
+                },
+              }}
               onClick={handleMetamaskConnection}
             >
-              <Typography>Connect Metamask</Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  fontFamily: "Merriweather, serif",
+                  color: "#f7f7f7",
+                  fontWeight: "bold",
+                }}
+              >
+                Connect Metamask
+              </Typography>
             </Button>
           </Box>
-        </Container>
+        </Box>
       ) : loading ? (
         <Box></Box>
       ) : (
         <>
-          <AppBar position="static">
-            <Container>
-              <Box>
-                {" "}
-                <Toolbar>
-                  <Typography>
-                    <StyledAvatar />
-                    {account.substring(0, 5)}...
-                    {account.substring(account.length - 4)}
-                  </Typography>
-                </Toolbar>
-                <Typography>
-                  Your wallet balance: {totalBalance?.substring(0, 5)}
+          <Toolbar
+            sx={{
+              position: "absolute",
+              right: "10px",
+              height: "10vh",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "right",
+            }}
+          >
+            <Box margin="10px">
+              <StyledAvatar />
+            </Box>
+            <Box>
+              <Grid container>
+                <Typography
+                  sx={{
+                    fontFamily: "Roboto, sans-serif",
+                    color: "#f7f7f7",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {account.substring(0, 5)}...
+                  {account.substring(account.length - 4)}
                 </Typography>
-              </Box>
-            </Container>
-          </AppBar>
-          <ContractInteraction
-            signer={provider?.getSigner()}
-            account={account}
-            balance={totalBalance}
-            getBalance={getBalance}
-          />
+              </Grid>
+              <Typography
+                sx={{
+                  fontFamily: "Roboto, sans-serif",
+                  color: "#f7f7f7",
+                  fontWeight: "bold",
+                }}
+              >
+                Your wallet balance: {totalBalance?.substring(0, 5)}
+              </Typography>
+            </Box>
+          </Toolbar>
+          <Box
+            sx={{
+              background: `linear-gradient(22deg, rgba(140,253,255,1) 14%, rgba(127,165,255,0.6825323879551821) 48%, rgba(109,211,255,1) 100%)`,
+              height: "100vh",
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <ContractInteraction
+              signer={provider?.getSigner()}
+              account={account}
+              balance={totalBalance}
+              getBalance={getBalance}
+            />
+          </Box>
         </>
       )}
-      {/* </ThemeProvider> */}
     </>
   );
 }
